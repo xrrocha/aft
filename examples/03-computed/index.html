@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 - Computed Values</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .output { background: #fff3e0; padding: 0.5rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    input { font-size: 1rem; padding: 0.5rem; width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+<h1>03 - Computed Values</h1>
+<p>Use <code>&lt;aft-bind&gt;</code> to declare derived values that update automatically.</p>
+
+<aft-form>
+  <aft-data>{"text": "Hello World"}</aft-data>
+
+  <aft-bind name="charCount" calc="text.length"></aft-bind>
+  <aft-bind name="wordCount" calc="text.trim() ? text.trim().split(/\s+/).length : 0"></aft-bind>
+
+  <label>
+    Enter some text:
+    <input aft-ref="text">
+  </label>
+
+  <div class="output">
+    <p>Character count: <strong aft-text="charCount"></strong></p>
+    <p>Word count: <strong aft-text="wordCount"></strong></p>
+  </div>
+</aft-form>
+
+<h2>What's happening?</h2>
+<ul>
+  <li><code>&lt;aft-bind name="charCount" calc="text.length"&gt;</code> creates a computed value</li>
+  <li>Computed values are <strong>read-only</strong> and auto-update when dependencies change</li>
+  <li>Use any JavaScript expression in <code>calc</code></li>
+</ul>
+
+<h2>Chaining Computed Values</h2>
+<p>Computed values can reference other computed values:</p>
+<pre><code>&lt;aft-bind name="a" calc="x * 2"&gt;&lt;/aft-bind&gt;
+&lt;aft-bind name="b" calc="a + 10"&gt;&lt;/aft-bind&gt;</code></pre>
+
+</body>
+</html>

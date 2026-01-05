@@ -1,0 +1,3 @@
+[test]
+# Only run unit tests in test/unit/, not integration tests
+root = "test/unit"

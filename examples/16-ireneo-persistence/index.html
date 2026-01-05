@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16 - Ireneo Persistence</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .task { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem;
+            border-bottom: 1px solid #eee; }
+    .task input[type="checkbox"] { width: 20px; height: 20px; }
+    .task input[type="text"] { flex: 1; padding: 0.25rem; font-size: 1rem;
+                               border: 1px solid transparent; background: transparent; }
+    .task.done input[type="text"] { text-decoration: line-through; opacity: 0.6; }
+    .actions { margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    button { padding: 0.5rem 1rem; cursor: pointer; border: 1px solid #ccc;
+             background: white; border-radius: 4px; }
+    button:hover { background: #f5f5f5; }
+    .save-btn { background: #4caf50; color: white; border-color: #4caf50; }
+    .save-btn:hover { background: #388e3c; }
+    .status { padding: 0.5rem 1rem; border-radius: 4px; margin: 1rem 0; font-size: 0.9rem; }
+    .status.saved { background: #e8f5e9; color: #2e7d32; }
+    .status.dirty { background: #fff3e0; color: #ef6c00; }
+    .info { background: #e3f2fd; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<h1>16 - Ireneo Persistence</h1>
+<p>Demonstrating Aft + <a href="https://github.com/xrrocha/ireneo">Ireneo</a> for localStorage persistence.</p>
+
+<div class="info">
+  <strong>Pattern:</strong> Aft handles reactivity; Ireneo handles snapshotting reactive proxies for persistence.
+  <br><br>
+  Ireneo's <code>snapshot()</code> extracts plain JSON from Proxy-wrapped objects,
+  enabling clean serialization to localStorage, IndexedDB, or remote APIs.
+</div>
+
+<aft-form id="todo-app">
+  <aft-data id="todos">
+  {
+    "tasks": [],
+    "lastSaved": null
+  }
+  </aft-data>
+
+  <aft-data id="ui">
+  {
+    "newTask": "",
+    "isDirty": false
+  }
+  </aft-data>
+
+  <h2>Persistent Todo List</h2>
+
+  <div class="status saved" aft-show="!ui.isDirty && todos.lastSaved">
+    Saved at <span aft-text="todos.lastSaved"></span>
+  </div>
+  <div class="status dirty" aft-show="ui.isDirty">
+    Unsaved changes
+  </div>
+
+  <div style="display: flex; gap: 0.5rem; margin: 1rem 0;">
+    <input aft-ref="ui.newTask" placeholder="What needs to be done?"
+           style="flex: 1; padding: 0.5rem; font-size: 1rem;"
+           aft-on-keydown="event.key === 'Enter' && ui.newTask.trim() && (todos.tasks.push({text: ui.newTask, done: false}), ui.newTask = '', ui.isDirty = true)">
+    <button aft-click="todos.tasks.push({text: ui.newTask, done: false}); ui.newTask = ''; ui.isDirty = true"
+            aft-attr-disabled="!ui.newTask.trim()">Add</button>
+  </div>
+
+  <div class="task" aft-each="todos.tasks" aft-as="task" aft-index-as="i"
+       aft-class="{done: task.done}">
+    <input type="checkbox" aft-ref="task.done"
+           aft-on-change="ui.isDirty = true">
+    <input type="text" aft-ref="task.text"
+           aft-on-input="ui.isDirty = true">
+    <button style="background: none; border: none; color: #999; cursor: pointer;"
+            aft-click="todos.tasks.splice(i, 1); ui.isDirty = true">×</button>
+  </div>
+
+  <p aft-show="todos.tasks.length === 0" style="color: #999; text-align: center;">
+    No tasks yet. Add one above!
+  </p>
+
+  <div class="actions">
+    <button class="save-btn" aft-click="app.save()">
+      Save to localStorage
+    </button>
+    <button aft-click="app.load()">
+      Load from localStorage
+    </button>
+    <button aft-click="app.clear()">
+      Clear Storage
+    </button>
+  </div>
+
+  <p style="font-size: 0.85rem; color: #666;">
+    Tasks: <span aft-text="todos.tasks.length"></span> |
+    Completed: <span aft-text="todos.tasks.filter(t => t.done).length"></span>
+  </p>
+</aft-form>
+
+<script type="module">
+  // Ireneo integration
+  // In production, import from: import { snapshot } from 'ireneo';
+  // For this demo, we inline a minimal snapshot function:
+
+  function snapshot(proxy) {
+    // Extract plain object from Proxy (simplified version)
+    // Real Ireneo handles edge cases, circular refs, etc.
+    return JSON.parse(JSON.stringify(proxy));
+  }
+
+  // Wait for Aft to initialize, then set up persistence
+  document.addEventListener('aft-ready', () => {
+    const form = document.getElementById('todo-app');
+
+    window.app = {
+      save() {
+        // Get reactive data from aft-form
+        const todosData = form.getData('todos');
+
+        // Snapshot strips Proxy wrappers for clean serialization
+        const plain = snapshot(todosData);
+        plain.lastSaved = new Date().toLocaleTimeString();
+
+        localStorage.setItem('aft-todos', JSON.stringify(plain));
+
+        // Update the lastSaved in reactive data
+        form.setData('todos', plain);
+        form.setData('ui', { ...form.getData('ui'), isDirty: false });
+
+        console.log('Saved:', plain);
+      },
+
+      load() {
+        const saved = localStorage.getItem('aft-todos');
+        if (saved) {
+          const data = JSON.parse(saved);
+          form.setData('todos', data);
+          form.setData('ui', { ...form.getData('ui'), isDirty: false });
+          console.log('Loaded:', data);
+        } else {
+          console.log('No saved data found');
+        }
+      },
+
+      clear() {
+        localStorage.removeItem('aft-todos');
+        form.setData('todos', { tasks: [], lastSaved: null });
+        form.setData('ui', { ...form.getData('ui'), isDirty: false });
+        console.log('Storage cleared');
+      }
+    };
+
+    // Auto-load on startup
+    if (localStorage.getItem('aft-todos')) {
+      app.load();
+    }
+  });
+</script>
+
+<h2>Integration Pattern</h2>
+
+<h3>Aft Form API</h3>
+<pre><code>const form = document.getElementById('my-form');
+
+// Read data (returns reactive proxy)
+const data = form.getData('todos');
+
+// Write data (triggers reactivity)
+form.setData('todos', newData);
+
+// Listen for ready
+document.addEventListener('aft-ready', () => { ... });
+</code></pre>
+
+<h3>Ireneo Snapshot</h3>
+<pre><code>import { snapshot } from 'ireneo';
+
+// Extract plain JSON from reactive proxy
+const plain = snapshot(form.getData('todos'));
+
+// Safe to serialize
+localStorage.setItem('key', JSON.stringify(plain));
+</code></pre>
+
+<h2>Why This Matters</h2>
+<ul>
+  <li><strong>Separation of concerns</strong>: Aft owns reactivity, Ireneo owns serialization</li>
+  <li><strong>No magic</strong>: Persistence is explicit, not automatic</li>
+  <li><strong>Flexible</strong>: Works with localStorage, IndexedDB, REST APIs, etc.</li>
+  <li><strong>Proxy-safe</strong>: Ireneo handles the Proxy → plain object conversion</li>
+</ul>
+
+</body>
+</html>

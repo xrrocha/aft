@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12 - Form Errors</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+    .field { margin: 1.5rem 0; }
+    label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+    input, select { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box;
+                    border: 2px solid #ccc; border-radius: 4px; }
+    input:focus, select:focus { outline: none; border-color: #2196f3; }
+    .aft-invalid { border-color: #f44336 !important; }
+    .aft-valid { border-color: #4caf50 !important; }
+    .field-error { color: #f44336; font-size: 0.85rem; margin-top: 0.25rem; }
+    .error-summary { background: #ffebee; border: 1px solid #f44336; border-radius: 4px;
+                     padding: 1rem; margin: 1rem 0; }
+    .error-summary h3 { margin: 0 0 0.5rem; color: #c62828; font-size: 1rem; }
+    .error-summary ul { margin: 0; padding-left: 1.25rem; }
+    .error-summary li { color: #c62828; margin: 0.25rem 0; }
+    .success { background: #e8f5e9; border: 1px solid #4caf50; border-radius: 4px;
+               padding: 1rem; margin: 1rem 0; color: #2e7d32; }
+    button { padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer;
+             background: #2196f3; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #1976d2; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .hint { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<aft-form>
+  <aft-data>
+  {
+    "username": "",
+    "email": "",
+    "password": "",
+    "confirmPassword": "",
+    "age": "",
+    "country": ""
+  }
+  </aft-data>
+
+  <aft-bind name="passwordsMatch" calc="password === confirmPassword"></aft-bind>
+
+  <h1>Registration Form</h1>
+  <p>Demonstrates the <code>$errors</code> object for validation feedback.</p>
+
+  <!-- Error Summary -->
+  <div class="error-summary" aft-if="$errors.any">
+    <h3>Please fix the following errors:</h3>
+    <ul>
+      <li aft-each="$errors.all" aft-as="err" aft-text="err.message"></li>
+    </ul>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success" aft-if="!$errors.any && username && email && password">
+    All fields are valid! Ready to submit.
+  </div>
+
+  <div class="field">
+    <label>Username</label>
+    <input aft-ref="username"
+           aft-required="true"
+           aft-constraint="value.length >= 3 && value.length <= 20"
+           placeholder="3-20 characters">
+    <div class="field-error" aft-show="$errors.username">
+      Username must be 3-20 characters
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" aft-ref="email"
+           aft-required="true"
+           aft-constraint="value.includes('@') && value.includes('.')"
+           placeholder="you@example.com">
+    <div class="field-error" aft-show="$errors.email">
+      Please enter a valid email address
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <input type="password" aft-ref="password"
+           aft-required="true"
+           aft-constraint="value.length >= 8"
+           placeholder="Minimum 8 characters">
+    <div class="field-error" aft-show="$errors.password">
+      Password must be at least 8 characters
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Confirm Password</label>
+    <input type="password" aft-ref="confirmPassword"
+           aft-required="true"
+           aft-constraint="passwordsMatch"
+           placeholder="Re-enter password">
+    <div class="field-error" aft-show="$errors.confirmPassword">
+      Passwords do not match
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Age</label>
+    <input type="number" aft-ref="age"
+           aft-required="true"
+           aft-constraint="value >= 13 && value <= 120"
+           placeholder="13+">
+    <div class="field-error" aft-show="$errors.age">
+      You must be at least 13 years old
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Country</label>
+    <select aft-ref="country" aft-required="true">
+      <option value="">Select your country...</option>
+      <option value="us">United States</option>
+      <option value="uk">United Kingdom</option>
+      <option value="ca">Canada</option>
+      <option value="au">Australia</option>
+      <option value="other">Other</option>
+    </select>
+    <div class="field-error" aft-show="$errors.country">
+      Please select a country
+    </div>
+  </div>
+
+  <button aft-attr-disabled="$errors.any">
+    Create Account
+  </button>
+</aft-form>
+
+<h2 style="margin-top: 2rem;">The <code>$errors</code> Object</h2>
+<ul>
+  <li><code>$errors.{path}</code> — boolean, true if field has errors</li>
+  <li><code>$errors.any</code> — boolean, true if any field has errors</li>
+  <li><code>$errors.all</code> — array of <code>{path, message}</code> objects</li>
+</ul>
+
+</body>
+</html>

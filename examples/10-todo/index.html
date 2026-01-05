@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10 - Todo Application</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { display: flex; align-items: center; gap: 1rem; }
+    .add-btn { font-size: 1.5rem; width: 40px; height: 40px; border-radius: 50%; border: none;
+               background: #4caf50; color: white; cursor: pointer; }
+    .add-btn:hover { background: #388e3c; }
+    .info { color: #666; font-size: 0.9rem; margin: 0.5rem 0; }
+    .info.open { color: #f57c00; }
+    .info.done { color: #4caf50; font-size: 1.2rem; font-weight: bold; }
+    .filters { margin: 1rem 0; }
+    .filters label { margin-right: 1rem; }
+    .task { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem;
+            border-bottom: 1px solid #eee; }
+    .task input[type="checkbox"] { width: 20px; height: 20px; }
+    .task input[type="text"] { flex: 1; font-size: 1rem; padding: 0.25rem;
+                               border: 1px solid transparent; background: transparent; }
+    .task input[type="text"]:focus { border-color: #2196f3; background: white; }
+    .task input[type="date"] { font-size: 0.85rem; }
+    .task.complete input[type="text"] { text-decoration: line-through; opacity: 0.6; }
+    .delete-btn { background: none; border: none; color: #999; cursor: pointer;
+                  font-size: 1.2rem; padding: 0.25rem 0.5rem; }
+    .delete-btn:hover { color: #f44336; }
+    .empty { text-align: center; color: #999; padding: 2rem; }
+  </style>
+</head>
+<body>
+
+<aft-form>
+  <aft-data>
+  {
+    "tasks": [
+      {"text": "Learn Aft basics", "complete": true, "due": ""},
+      {"text": "Build something cool", "complete": false, "due": ""}
+    ],
+    "filter": "all"
+  }
+  </aft-data>
+
+  <aft-bind name="completedCount" calc="tasks.filter(t => t.complete).length"></aft-bind>
+  <aft-bind name="openCount" calc="tasks.length - completedCount"></aft-bind>
+  <aft-bind name="allDone" calc="tasks.length > 0 && openCount === 0"></aft-bind>
+  <aft-bind name="visibleTasks" calc="
+    filter === 'all' ? tasks :
+    filter === 'active' ? tasks.filter(t => !t.complete) :
+    tasks.filter(t => t.complete)
+  "></aft-bind>
+
+  <h1>
+    Todo
+    <button class="add-btn" aft-click="tasks.unshift({text: '', complete: false, due: ''})">+</button>
+  </h1>
+
+  <p class="info">
+    You have <strong aft-text="completedCount"></strong> completed tasks
+  </p>
+  <p class="info open" aft-show="openCount > 0">
+    You have <strong aft-text="openCount"></strong> open tasks
+  </p>
+  <p class="info done" aft-show="allDone">
+    You're all done!
+  </p>
+
+  <div class="filters">
+    <label>
+      <input type="radio" name="filter" value="all" aft-ref="filter"> All
+    </label>
+    <label>
+      <input type="radio" name="filter" value="active" aft-ref="filter"> Active
+    </label>
+    <label>
+      <input type="radio" name="filter" value="completed" aft-ref="filter"> Completed
+    </label>
+  </div>
+
+  <div class="task" aft-each="visibleTasks" aft-as="task" aft-class="{complete: task.complete}">
+    <input type="checkbox" aft-ref="task.complete">
+    <input type="text" aft-ref="task.text" placeholder="What needs to be done?">
+    <input type="date" aft-ref="task.due">
+    <button class="delete-btn" aft-click="tasks.splice(tasks.indexOf(task), 1)">×</button>
+  </div>
+
+  <p class="empty" aft-show="visibleTasks.length === 0">
+    No tasks to show.
+  </p>
+
+  <p style="margin-top: 2rem;" aft-show="completedCount > 0">
+    <button aft-click="data.tasks = tasks.filter(t => !t.complete)">
+      Clear completed
+    </button>
+  </p>
+</aft-form>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>09 - Dependent Selects</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { background: #f5f5f5; padding: 1rem; border-radius: 4px; }
+    select { font-size: 1rem; padding: 0.5rem; width: 100%; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    .result { background: #e3f2fd; padding: 1rem; border-radius: 4px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+<h1>09 - Dependent Selects</h1>
+<p>A classic pattern: selecting a continent filters the available countries.</p>
+
+<aft-form>
+  <aft-data>
+  {
+    "selectedContinent": "",
+    "selectedCountry": "",
+    "countries": [
+      {"name": "United States", "code": "us", "continent": "north-america"},
+      {"name": "Canada", "code": "ca", "continent": "north-america"},
+      {"name": "Mexico", "code": "mx", "continent": "north-america"},
+      {"name": "Brazil", "code": "br", "continent": "south-america"},
+      {"name": "Argentina", "code": "ar", "continent": "south-america"},
+      {"name": "Germany", "code": "de", "continent": "europe"},
+      {"name": "France", "code": "fr", "continent": "europe"},
+      {"name": "Italy", "code": "it", "continent": "europe"},
+      {"name": "Spain", "code": "es", "continent": "europe"},
+      {"name": "Japan", "code": "jp", "continent": "asia"},
+      {"name": "China", "code": "cn", "continent": "asia"},
+      {"name": "India", "code": "in", "continent": "asia"},
+      {"name": "Australia", "code": "au", "continent": "oceania"},
+      {"name": "New Zealand", "code": "nz", "continent": "oceania"}
+    ]
+  }
+  </aft-data>
+
+  <aft-bind name="filteredCountries"
+            calc="selectedContinent ? countries.filter(c => c.continent === selectedContinent) : []">
+  </aft-bind>
+
+  <div class="grid">
+    <div class="field">
+      <label>Continent</label>
+      <select aft-ref="selectedContinent" aft-on-change="selectedCountry = ''">
+        <option value="">Select continent...</option>
+        <option value="north-america">North America</option>
+        <option value="south-america">South America</option>
+        <option value="europe">Europe</option>
+        <option value="asia">Asia</option>
+        <option value="oceania">Oceania</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Country</label>
+      <select aft-ref="selectedCountry" aft-attr-disabled="!selectedContinent">
+        <option value="">Select country...</option>
+        <option aft-each="filteredCountries" aft-as="country"
+                aft-attr-value="country.code"
+                aft-text="country.name"></option>
+      </select>
+    </div>
+  </div>
+
+  <div class="result" aft-show="selectedCountry">
+    <p>You selected: <strong aft-text="countries.find(c => c.code === selectedCountry)?.name"></strong>
+       (<span aft-text="selectedCountry"></span>)</p>
+  </div>
+</aft-form>
+
+<h2>How It Works</h2>
+<ul>
+  <li>First select updates <code>selectedContinent</code></li>
+  <li>Computed <code>filteredCountries</code> reacts to the change</li>
+  <li>Second select iterates over the filtered list</li>
+  <li><code>aft-on-change</code> resets country when continent changes</li>
+  <li><code>aft-attr-disabled</code> disables country select until continent is chosen</li>
+</ul>
+
+</body>
+</html>

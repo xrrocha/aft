@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15 - Edge Cases</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    section { background: #f5f5f5; padding: 1rem; margin: 1.5rem 0; border-radius: 4px; }
+    section h3 { margin-top: 0; }
+    .output { background: white; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; }
+    .warning { background: #fff3e0; border-left: 4px solid #ff9800; padding: 0.5rem 1rem; }
+    input { padding: 0.5rem; font-size: 1rem; }
+    button { padding: 0.5rem 1rem; cursor: pointer; margin: 0.25rem; }
+    code { background: #e8e8e8; padding: 2px 6px; border-radius: 3px; }
+    .html-output { border: 1px dashed #ccc; padding: 0.5rem; min-height: 2rem; }
+  </style>
+</head>
+<body>
+
+<h1>15 - Edge Cases</h1>
+<p>Testing boundary conditions and complex scenarios.</p>
+
+<aft-form>
+  <aft-data>
+  {
+    "deep": {
+      "nested": {
+        "value": "original"
+      }
+    },
+    "items": [1, 2, 3, 4, 5],
+    "htmlContent": "<strong>Bold</strong> and <em>italic</em>",
+    "unsafeHtml": "<img src=x onerror=alert('xss')>",
+    "counter": 0
+  }
+  </aft-data>
+
+  <!-- Computed chain: a -> b -> c -->
+  <aft-bind name="doubled" calc="counter * 2"></aft-bind>
+  <aft-bind name="quadrupled" calc="doubled * 2"></aft-bind>
+  <aft-bind name="message" calc="`Counter: ${counter}, Doubled: ${doubled}, Quad: ${quadrupled}`"></aft-bind>
+
+  <!-- Test 1: Deep Object Mutation -->
+  <section>
+    <h3>1. Deep Object Mutation</h3>
+    <p>Does reactivity track deeply nested property changes?</p>
+
+    <input aft-ref="deep.nested.value" style="width: 200px;">
+    <div class="output">
+      Current value: <strong aft-text="deep.nested.value"></strong>
+    </div>
+    <button aft-click="deep.nested.value = 'mutated!'">Mutate via Button</button>
+    <button aft-click="deep.nested = {value: 'replaced object'}">Replace Parent Object</button>
+  </section>
+
+  <!-- Test 2: Computed Value Chains -->
+  <section>
+    <h3>2. Computed Value Chains</h3>
+    <p>Computed values that depend on other computed values.</p>
+
+    <button aft-click="counter++">Increment (counter++)</button>
+    <button aft-click="counter = 0">Reset</button>
+
+    <div class="output">
+      <p aft-text="message"></p>
+    </div>
+    <p><small>Chain: counter → doubled → quadrupled → message</small></p>
+  </section>
+
+  <!-- Test 3: aft-html (XSS Warning) -->
+  <section>
+    <h3>3. aft-html (Raw HTML Injection)</h3>
+    <div class="warning">
+      <strong>Warning:</strong> <code>aft-html</code> can cause XSS if used with untrusted data.
+    </div>
+
+    <p>Safe content:</p>
+    <div class="html-output" aft-html="htmlContent"></div>
+
+    <p>Potentially unsafe (implementation should sanitize or warn):</p>
+    <div class="html-output" aft-html="unsafeHtml"></div>
+
+    <p>
+      <input aft-ref="htmlContent" style="width: 300px;" placeholder="Enter HTML...">
+    </p>
+  </section>
+
+  <!-- Test 4: Array Mutation Methods -->
+  <section>
+    <h3>4. Array Mutation Methods</h3>
+    <p>All mutating array methods should trigger reactivity.</p>
+
+    <div class="output">
+      Items: [<span aft-text="items.join(', ')"></span>]
+      <br>Length: <span aft-text="items.length"></span>
+    </div>
+
+    <div>
+      <button aft-click="items.push(items.length + 1)">push()</button>
+      <button aft-click="items.pop()">pop()</button>
+      <button aft-click="items.shift()">shift()</button>
+      <button aft-click="items.unshift(0)">unshift(0)</button>
+      <button aft-click="items.reverse()">reverse()</button>
+      <button aft-click="items.sort((a,b) => a - b)">sort()</button>
+      <button aft-click="items.splice(1, 1, 99)">splice(1,1,99)</button>
+      <button aft-click="items.length = 0">clear</button>
+      <button aft-click="data.items = [1, 2, 3, 4, 5]">reset</button>
+    </div>
+  </section>
+
+  <!-- Test 5: Empty States -->
+  <section>
+    <h3>5. Empty and Falsy Values</h3>
+    <p>How do bindings handle empty arrays, null, undefined, 0, ""?</p>
+
+    <aft-data id="edge">
+    {
+      "emptyArray": [],
+      "emptyString": "",
+      "zero": 0,
+      "nullValue": null,
+      "falseValue": false
+    }
+    </aft-data>
+
+    <ul>
+      <li>Empty array length: <strong aft-text="edge.emptyArray.length"></strong></li>
+      <li>Empty string: "<span aft-text="edge.emptyString"></span>"</li>
+      <li>Zero: <strong aft-text="edge.zero"></strong></li>
+      <li>Null: <strong aft-text="edge.nullValue"></strong></li>
+      <li>False: <strong aft-text="edge.falseValue"></strong></li>
+    </ul>
+
+    <p>Iteration over empty array (should show nothing):</p>
+    <div aft-each="edge.emptyArray" aft-as="x">
+      <span>This should not appear: <span aft-text="x"></span></span>
+    </div>
+    <p aft-show="edge.emptyArray.length === 0" style="color: #999;">
+      (Empty array - no items rendered)
+    </p>
+  </section>
+
+  <!-- Test 6: aft-style -->
+  <section>
+    <h3>6. Dynamic Styles (aft-style)</h3>
+
+    <aft-data id="styles">
+    {
+      "bgColor": "#e3f2fd",
+      "textColor": "#1565c0",
+      "padding": 16
+    }
+    </aft-data>
+
+    <div aft-style="{backgroundColor: styles.bgColor, color: styles.textColor, padding: styles.padding + 'px', borderRadius: '4px'}">
+      This box has dynamic styles.
+    </div>
+
+    <p>
+      <label>Background: <input type="color" aft-ref="styles.bgColor"></label>
+      <label>Text: <input type="color" aft-ref="styles.textColor"></label>
+      <label>Padding: <input type="range" min="0" max="40" aft-ref="styles.padding"> <span aft-text="styles.padding"></span>px</label>
+    </p>
+  </section>
+</aft-form>
+
+<h2>What This Tests</h2>
+<ul>
+  <li><strong>Deep reactivity</strong>: Changes to <code>a.b.c</code> trigger updates</li>
+  <li><strong>Computed chains</strong>: Lazy evaluation ordering</li>
+  <li><strong>aft-html</strong>: Raw HTML injection (security concern)</li>
+  <li><strong>All array methods</strong>: push, pop, shift, unshift, reverse, sort, splice</li>
+  <li><strong>Falsy values</strong>: 0, "", null, false, []</li>
+  <li><strong>aft-style</strong>: Object to inline style conversion</li>
+</ul>
+
+</body>
+</html>

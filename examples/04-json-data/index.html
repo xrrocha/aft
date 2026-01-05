@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04 - JSON Data with Arrays</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    ul { background: #f3e5f5; padding: 1rem 1rem 1rem 2rem; border-radius: 4px; }
+    li { margin: 0.5rem 0; }
+    .highlight { background: #ffeb3b; padding: 0 4px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<h1>04 - JSON Data with Arrays</h1>
+<p>Aft works with JSON data including nested objects and arrays.</p>
+
+<aft-form>
+  <aft-data>
+  {
+    "automobiles": [
+      {"maker": "Nissan", "model": "Teana", "year": 2000},
+      {"maker": "Honda", "model": "Jazz", "year": 2023},
+      {"maker": "Honda", "model": "Civic", "year": 2007},
+      {"maker": "Toyota", "model": "Yaris", "year": 2008},
+      {"maker": "Honda", "model": "Accord", "year": 2011}
+    ]
+  }
+  </aft-data>
+
+  <aft-bind name="hondaCount" calc="automobiles.filter(c => c.maker === 'Honda').length"></aft-bind>
+  <aft-bind name="newest" calc="automobiles.reduce((a, b) => a.year > b.year ? a : b)"></aft-bind>
+
+  <h2>All Cars</h2>
+  <ul>
+    <li aft-each="automobiles" aft-as="car">
+      <strong aft-text="car.maker"></strong>
+      <span aft-text="car.model"></span>
+      (<span aft-text="car.year"></span>)
+    </li>
+  </ul>
+
+  <h2>Computed Facts</h2>
+  <p>Honda vehicles: <strong aft-text="hondaCount"></strong></p>
+  <p>Newest car: <span class="highlight" aft-text="`${newest.maker} ${newest.model} (${newest.year})`"></span></p>
+</aft-form>
+
+<h2>What's happening?</h2>
+<ul>
+  <li><code>aft-each="automobiles"</code> iterates over the array</li>
+  <li><code>aft-as="car"</code> names the iteration variable (default: <code>item</code>)</li>
+  <li>Computed values use array methods like <code>filter</code> and <code>reduce</code></li>
+  <li>Template literals work in expressions: <code>`${newest.maker}`</code></li>
+</ul>
+
+</body>
+</html>

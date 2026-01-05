@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05 - Iteration with Tables</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background: #e0f7fa; }
+    input { width: 60px; padding: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>05 - Iteration with Tables</h1>
+<p>Use <code>aft-each</code> on a <code>&lt;tr&gt;</code> to build dynamic tables.</p>
+
+<aft-form>
+  <aft-data>
+  {
+    "products": [
+      {"name": "Widget A", "price": 25.00, "qty": 2},
+      {"name": "Widget B", "price": 15.50, "qty": 1},
+      {"name": "Widget C", "price": 42.00, "qty": 3},
+      {"name": "Widget D", "price": 8.75, "qty": 5}
+    ]
+  }
+  </aft-data>
+
+  <aft-bind name="grandTotal" calc="products.reduce((sum, p) => sum + p.price * p.qty, 0)"></aft-bind>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr aft-each="products" aft-as="product" aft-index-as="i">
+        <td aft-text="i + 1"></td>
+        <td aft-text="product.name"></td>
+        <td>$<span aft-text="product.price.toFixed(2)"></span></td>
+        <td><input type="number" aft-ref="product.qty" min="0"></td>
+        <td>$<span aft-text="(product.price * product.qty).toFixed(2)"></span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" style="text-align: right;"><strong>Grand Total:</strong></td>
+        <td><strong>$<span aft-text="grandTotal.toFixed(2)"></span></strong></td>
+      </tr>
+    </tfoot>
+  </table>
+</aft-form>
+
+<h2>What's happening?</h2>
+<ul>
+  <li><code>aft-each="products"</code> repeats the <code>&lt;tr&gt;</code> for each item</li>
+  <li><code>aft-index-as="i"</code> provides the 0-based index</li>
+  <li><code>aft-ref="product.qty"</code> enables two-way binding inside iteration</li>
+  <li>The grand total updates automatically when any quantity changes</li>
+</ul>
+
+</body>
+</html>

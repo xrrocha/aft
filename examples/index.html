@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aft Examples</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { border-bottom: 2px solid #333; padding-bottom: 0.5rem; }
+    .example { display: block; padding: 1rem; margin: 0.5rem 0; background: #f5f5f5;
+               border-radius: 4px; text-decoration: none; color: inherit; }
+    .example:hover { background: #e3f2fd; }
+    .example-num { color: #666; font-size: 0.85rem; }
+    .example-title { font-weight: 500; font-size: 1.1rem; }
+    .example-desc { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
+    .section { margin-top: 2rem; }
+    .section-title { color: #666; font-size: 0.85rem; text-transform: uppercase;
+                     letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<h1>Aft Examples</h1>
+<p>Progressive examples demonstrating Aft's declarative data binding.</p>
+
+<div class="section">
+  <div class="section-title">Basics</div>
+
+  <a class="example" href="01-hello/">
+    <span class="example-num">01</span>
+    <span class="example-title">Hello World</span>
+    <div class="example-desc">Simplest output with aft-text</div>
+  </a>
+
+  <a class="example" href="02-ref/">
+    <span class="example-num">02</span>
+    <span class="example-title">Two-Way Binding</span>
+    <div class="example-desc">Input binding with aft-ref</div>
+  </a>
+
+  <a class="example" href="03-computed/">
+    <span class="example-num">03</span>
+    <span class="example-title">Computed Values</span>
+    <div class="example-desc">Derived values with &lt;aft-bind calc&gt;</div>
+  </a>
+
+  <a class="example" href="04-json-data/">
+    <span class="example-num">04</span>
+    <span class="example-title">JSON Data</span>
+    <div class="example-desc">Working with arrays and objects</div>
+  </a>
+</div>
+
+<div class="section">
+  <div class="section-title">Core Features</div>
+
+  <a class="example" href="05-each-table/">
+    <span class="example-num">05</span>
+    <span class="example-title">Iteration</span>
+    <div class="example-desc">Building tables with aft-each</div>
+  </a>
+
+  <a class="example" href="06-validation/">
+    <span class="example-num">06</span>
+    <span class="example-title">Validation</span>
+    <div class="example-desc">Constraints: required, constraint, readonly</div>
+  </a>
+
+  <a class="example" href="07-conditional/">
+    <span class="example-num">07</span>
+    <span class="example-title">Conditionals</span>
+    <div class="example-desc">aft-if and aft-show for conditional rendering</div>
+  </a>
+</div>
+
+<div class="section">
+  <div class="section-title">Advanced Patterns</div>
+
+  <a class="example" href="08-multi-data/">
+    <span class="example-num">08</span>
+    <span class="example-title">Multiple Data Sources</span>
+    <div class="example-desc">Separate form data from lookup data</div>
+  </a>
+
+  <a class="example" href="09-dependent-select/">
+    <span class="example-num">09</span>
+    <span class="example-title">Dependent Selects</span>
+    <div class="example-desc">Cascading dropdowns with computed filters</div>
+  </a>
+</div>
+
+<div class="section">
+  <div class="section-title">Complete Applications</div>
+
+  <a class="example" href="10-todo/">
+    <span class="example-num">10</span>
+    <span class="example-title">Todo App</span>
+    <div class="example-desc">Full CRUD with filters and computed stats</div>
+  </a>
+
+  <a class="example" href="11-shopping-cart/">
+    <span class="example-num">11</span>
+    <span class="example-title">Shopping Cart</span>
+    <div class="example-desc">Computed totals with tax calculation</div>
+  </a>
+
+  <a class="example" href="12-form-errors/">
+    <span class="example-num">12</span>
+    <span class="example-title">Form Errors</span>
+    <div class="example-desc">$errors object for validation feedback</div>
+  </a>
+</div>
+
+<div class="section">
+  <div class="section-title">Edge Cases & Integration</div>
+
+  <a class="example" href="13-nested-each/">
+    <span class="example-num">13</span>
+    <span class="example-title">Nested Iteration</span>
+    <div class="example-desc">Context variable scoping in nested loops</div>
+  </a>
+
+  <a class="example" href="14-async-data/">
+    <span class="example-num">14</span>
+    <span class="example-title">Async Data</span>
+    <div class="example-desc">External JSON loading with &lt;aft-data src&gt;</div>
+  </a>
+
+  <a class="example" href="15-edge-cases/">
+    <span class="example-num">15</span>
+    <span class="example-title">Edge Cases</span>
+    <div class="example-desc">Deep mutation, computed chains, aft-html, aft-style</div>
+  </a>
+
+  <a class="example" href="16-ireneo-persistence/">
+    <span class="example-num">16</span>
+    <span class="example-title">Ireneo Persistence</span>
+    <div class="example-desc">Aft + Ireneo for localStorage integration</div>
+  </a>
+</div>
+
+<p style="margin-top: 2rem; color: #999; font-size: 0.85rem;">
+  Note: These examples require the Aft library at <code>../../dist/aft.js</code>.
+  Implementation is pending.
+</p>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14 - Async Data Loading</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .loading { background: #fff3e0; padding: 1rem; border-radius: 4px; text-align: center; }
+    .error { background: #ffebee; padding: 1rem; border-radius: 4px; color: #c62828; }
+    .user-card { background: #f5f5f5; padding: 1rem; border-radius: 4px; margin: 0.5rem 0; }
+    .user-card h3 { margin: 0 0 0.5rem; }
+    .user-card p { margin: 0.25rem 0; color: #666; }
+    button { padding: 0.5rem 1rem; cursor: pointer; margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<h1>14 - Async Data Loading</h1>
+<p>Test case for <code>&lt;aft-data src="..."&gt;</code> with external JSON.</p>
+
+<h2>Example 1: Load from URL</h2>
+
+<aft-form id="users-form">
+  <!-- Load from external JSON file -->
+  <aft-data src="users.json"></aft-data>
+
+  <!-- Loading state (shown while fetching) -->
+  <div class="loading" aft-show="$loading">
+    Loading users...
+  </div>
+
+  <!-- Error state -->
+  <div class="error" aft-show="$error">
+    Failed to load data: <span aft-text="$error"></span>
+  </div>
+
+  <!-- Content (shown after load) -->
+  <div aft-show="!$loading && !$error">
+    <p>Loaded <strong aft-text="users.length"></strong> users:</p>
+
+    <div class="user-card" aft-each="users" aft-as="user">
+      <h3 aft-text="user.name"></h3>
+      <p>Email: <span aft-text="user.email"></span></p>
+      <p>Role: <span aft-text="user.role"></span></p>
+    </div>
+  </div>
+</aft-form>
+
+<h2>Example 2: Reload on Demand</h2>
+
+<aft-form id="refresh-demo">
+  <aft-data id="config" src="config.json"></aft-data>
+  <aft-data id="local">{"lastRefresh": null}</aft-data>
+
+  <p>Config version: <strong aft-text="config.version || 'loading...'"></strong></p>
+  <p>Last refresh: <span aft-text="local.lastRefresh || 'never'"></span></p>
+
+  <button aft-click="$reload('config'); local.lastRefresh = new Date().toLocaleTimeString()">
+    Reload Config
+  </button>
+</aft-form>
+
+<h2>What This Tests</h2>
+<ul>
+  <li><strong><code>$loading</code></strong>: Boolean, true while fetching</li>
+  <li><strong><code>$error</code></strong>: Error message if fetch fails</li>
+  <li><strong><code>$reload(id)</code></strong>: Re-fetch a data source</li>
+  <li><strong>Mixed sources</strong>: External (<code>src</code>) + inline data</li>
+  <li><strong>aft-ready event</strong>: Fires after all data loaded</li>
+</ul>
+
+<h2>Sample Data Files</h2>
+<p>Create these files alongside this example:</p>
+
+<h3>users.json</h3>
+<pre><code>{
+  "users": [
+    {"name": "Alice Smith", "email": "alice@example.com", "role": "Admin"},
+    {"name": "Bob Jones", "email": "bob@example.com", "role": "User"},
+    {"name": "Carol White", "email": "carol@example.com", "role": "User"}
+  ]
+}</code></pre>
+
+<h3>config.json</h3>
+<pre><code>{
+  "version": "1.0.0",
+  "features": {"darkMode": true, "notifications": false}
+}</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02 - Two-Way Binding</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .output { background: #e3f2fd; padding: 0.5rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    input { font-size: 1rem; padding: 0.5rem; width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+<h1>02 - Two-Way Binding</h1>
+<p>Use <code>aft-ref</code> to bind an input to data. Changes flow both ways.</p>
+
+<aft-form>
+  <aft-data>
+  {
+    "planet": {
+      "greeting": "Hello Earth"
+    }
+  }
+  </aft-data>
+
+  <label>
+    Edit the greeting:
+    <input aft-ref="planet.greeting">
+  </label>
+
+  <p class="output">
+    Current value: <strong aft-text="planet.greeting"></strong>
+  </p>
+</aft-form>
+
+<h2>What's happening?</h2>
+<ul>
+  <li><code>aft-ref="planet.greeting"</code> binds the input to nested data</li>
+  <li>Typing in the input updates the data</li>
+  <li>The <code>aft-text</code> output updates automatically</li>
+</ul>
+
+<h2>Path Expressions</h2>
+<p>Paths use JavaScript property access: <code>planet.greeting</code>, <code>items[0].name</code>, etc.</p>
+
+</body>
+</html>

@@ -1,3 +1,26 @@
+# Session-specific
 .claude
 CLAUDE.md
 .local
+
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+bun.lock
+
+# Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

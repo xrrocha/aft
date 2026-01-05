@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01 - Hello World</title>
+  <script type="module" src="../../dist/aft.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .output { background: #e8f5e9; padding: 0.5rem 1rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>01 - Hello World</h1>
+<p>The simplest Aft example: display a value from data.</p>
+
+<aft-form>
+  <aft-data>{"greeting": "Hello Universe"}</aft-data>
+
+  <p class="output">
+    <span aft-text="greeting"></span>
+  </p>
+</aft-form>
+
+<h2>What's happening?</h2>
+<ul>
+  <li><code>&lt;aft-form&gt;</code> creates a reactive context</li>
+  <li><code>&lt;aft-data&gt;</code> provides JSON data</li>
+  <li><code>aft-text="greeting"</code> displays the value of <code>greeting</code></li>
+</ul>
+
+<h2>The Code</h2>
+<pre><code>&lt;aft-form&gt;
+  &lt;aft-data&gt;{"greeting": "Hello Universe"}&lt;/aft-data&gt;
+
+  &lt;p&gt;&lt;span aft-text="greeting"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/aft-form&gt;</code></pre>
+
+</body>
+</html>

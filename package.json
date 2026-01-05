@@ -1,0 +1,36 @@
+{
+  "name": "aft",
+  "version": "0.1.0",
+  "description": "Declarative, attribute-based data binding for the browser",
+  "type": "module",
+  "main": "dist/aft.js",
+  "types": "dist/aft.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "bun test",
+    "test:e2e": "playwright test",
+    "test:all": "bun test && playwright test",
+    "serve": "bun --bun serve.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@playwright/test": "^1.40.0"
+  },
+  "keywords": [
+    "reactive",
+    "data-binding",
+    "declarative",
+    "forms",
+    "web-components"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xrrocha/aft"
+  }
+}
