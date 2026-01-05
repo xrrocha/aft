@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" name="viewport"/>
+    <title>Hello World - Aft</title>
+</head>
+<body>
+<h1>Aft: Hello World</h1>
+
+<aft-form>
+    <aft-control ref="$.greeting">
+        <label>Hello</label>
+        <aft-message event="value-changed">Hello ${value}</aft-message>
+    </aft-control>
+</aft-form>
+
+<script type="module" src="../../dist/aft.js"></script>
+</body>
+</html>

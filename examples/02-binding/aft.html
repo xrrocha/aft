@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" name="viewport"/>
+    <title>Simple Binding - Aft</title>
+</head>
+<body>
+<h1>Aft: Simple Binding with Explicit Model</h1>
+
+<aft-form>
+    <aft-model>
+        <aft-data id="main">
+        {
+            "item": "foobar"
+        }
+        </aft-data>
+    </aft-model>
+
+    <aft-control ref="$.item" update-event="input">
+        <label>First binding</label>
+    </aft-control>
+
+    <aft-control ref="$.item">
+        <label>Same binding (synced)</label>
+    </aft-control>
+
+    <div>Current value: ${data.item}</div>
+</aft-form>
+
+<script type="module" src="../../dist/aft.js"></script>
+</body>
+</html>
