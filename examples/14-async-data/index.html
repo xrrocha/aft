@@ -18,26 +18,33 @@
 <body>
 
 <h1>14 - Async Data Loading</h1>
-<p>Test case for <code>&lt;aft-data src="..."&gt;</code> with external JSON.</p>
+<p>
+  Demonstrates how <code>&lt;aft-data src="..."&gt;</code> exposes its loading
+  state via <code>$tasks</code>, and how a reload button shares that same task
+  state using <code>aft-task</code>.
+</p>
 
-<h2>Example 1: Load from URL</h2>
+<h2>Example 1: Initial Load with Error Handling</h2>
 
 <aft-form id="users-form">
-  <!-- Load from external JSON file -->
-  <aft-data src="users.json"></aft-data>
+  <!-- id is required: loading state is exposed at $tasks.users -->
+  <aft-data id="users" src="users.json"></aft-data>
 
-  <!-- Loading state (shown while fetching) -->
-  <div class="loading" aft-show="$loading">
+  <!-- Shown while fetching -->
+  <div class="loading" aft-show="$tasks.users.pending">
     Loading users...
   </div>
 
-  <!-- Error state -->
-  <div class="error" aft-show="$error">
-    Failed to load data: <span aft-text="$error"></span>
+  <!-- Shown on fetch failure; retry shares the same $tasks.users state -->
+  <div class="error" aft-show="$tasks.users.error">
+    Failed to load: <span aft-text="$tasks.users.error.message"></span>
+    <button aft-click="$reload('users')"
+            aft-task="users"
+            aft-policy="restart">Retry</button>
   </div>
 
-  <!-- Content (shown after load) -->
-  <div aft-show="!$loading && !$error">
+  <!-- Shown once loaded without error -->
+  <div aft-show="!$tasks.users.pending && !$tasks.users.error">
     <p>Loaded <strong aft-text="users.length"></strong> users:</p>
 
     <div class="user-card" aft-each="users" aft-as="user">
@@ -52,42 +59,62 @@
 
 <aft-form id="refresh-demo">
   <aft-data id="config" src="config.json"></aft-data>
-  <aft-data id="local">{"lastRefresh": null}</aft-data>
 
-  <p>Config version: <strong aft-text="config.version || 'loading...'"></strong></p>
-  <p>Last refresh: <span aft-text="local.lastRefresh || 'never'"></span></p>
+  <p>Config version: <strong aft-text="config.version || '…'"></strong></p>
+  <!-- $tasks.config.startedAt is set on every fetch, initial or reload -->
+  <p>Last loaded:
+    <span aft-text="$tasks.config.startedAt
+      ? new Date($tasks.config.startedAt).toLocaleTimeString()
+      : 'never'"></span>
+  </p>
 
-  <button aft-click="$reload('config'); local.lastRefresh = new Date().toLocaleTimeString()">
+  <!--
+    aft-task="config" makes this button a participant in the same task as
+    <aft-data id="config">. $tasks.config.pending goes true for both the
+    initial load and any reload triggered here.
+    aft-policy="restart" cancels an in-flight reload when a new one fires.
+  -->
+  <button aft-click="$reload('config')"
+          aft-task="config"
+          aft-policy="restart"
+          aft-attr-disabled="$tasks.config.pending">
     Reload Config
   </button>
+
+  <div class="error" aft-if="$tasks.config.error">
+    <span aft-text="$tasks.config.error.message"></span>
+  </div>
 </aft-form>
 
-<h2>What This Tests</h2>
+<h2>What This Demonstrates</h2>
 <ul>
-  <li><strong><code>$loading</code></strong>: Boolean, true while fetching</li>
-  <li><strong><code>$error</code></strong>: Error message if fetch fails</li>
-  <li><strong><code>$reload(id)</code></strong>: Re-fetch a data source</li>
-  <li><strong>Mixed sources</strong>: External (<code>src</code>) + inline data</li>
-  <li><strong>aft-ready event</strong>: Fires after all data loaded</li>
+  <li>
+    <strong>Implicit task creation</strong>:
+    <code>&lt;aft-data id="x" src="..."&gt;</code> automatically creates and
+    manages <code>$tasks.x</code> — no extra markup needed
+  </li>
+  <li>
+    <strong>Task state</strong>: <code>$tasks.x.pending</code>,
+    <code>$tasks.x.error</code>, and <code>$tasks.x.startedAt</code> are
+    reactive and usable in any binding expression
+  </li>
+  <li>
+    <strong>Shared task state</strong>: a button declaring
+    <code>aft-task="x"</code> participates in the same task slot as the
+    <code>&lt;aft-data id="x"&gt;</code> initial load — one indicator
+    covers both
+  </li>
+  <li>
+    <strong>Concurrency policy</strong>: <code>aft-policy="restart"</code>
+    cancels an in-flight request when a new one is triggered; use
+    <code>drop</code> to ignore new attempts while one is pending
+  </li>
+  <li>
+    <strong><code>$reload(id)</code></strong>: context function that
+    re-fetches a data source by id, updating <code>$tasks.&lt;id&gt;</code>
+    just as the initial fetch does
+  </li>
 </ul>
-
-<h2>Sample Data Files</h2>
-<p>Create these files alongside this example:</p>
-
-<h3>users.json</h3>
-<pre><code>{
-  "users": [
-    {"name": "Alice Smith", "email": "alice@example.com", "role": "Admin"},
-    {"name": "Bob Jones", "email": "bob@example.com", "role": "User"},
-    {"name": "Carol White", "email": "carol@example.com", "role": "User"}
-  ]
-}</code></pre>
-
-<h3>config.json</h3>
-<pre><code>{
-  "version": "1.0.0",
-  "features": {"darkMode": true, "notifications": false}
-}</code></pre>
 
 </body>
 </html>
